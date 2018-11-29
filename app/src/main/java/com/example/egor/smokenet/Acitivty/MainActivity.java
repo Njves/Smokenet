@@ -3,6 +3,8 @@ package com.example.egor.smokenet.Acitivty;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,22 +14,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.egor.smokenet.Database.DBHelper;
+import com.example.egor.smokenet.Fragment.DistributorFragment;
+import com.example.egor.smokenet.Model.FragmentLauncher;
 import com.example.egor.smokenet.R;
 
 import java.util.Random;
 
-public class    MainActivity extends AppCompatActivity {
+public class    MainActivity extends FragmentLauncher {
     private TextView mTextView;
     private Button button;
     private Button button1;
     private EditText editText;
     private DBHelper dbHelper;
     public static final String  TAG = "mainactivity";
+
+    @Override
+    public Fragment createFragment() {
+        return new DistributorFragment();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mTextView = findViewById(R.id.tx);
+        /*mTextView = findViewById(R.id.tx);
         button = findViewById(R.id.button);
         editText = findViewById(R.id.editText);
         button1 = findViewById(R.id.button2);
@@ -83,6 +93,7 @@ public class    MainActivity extends AppCompatActivity {
                 c.close();
             }
         });
+*/
 
     }
 }
