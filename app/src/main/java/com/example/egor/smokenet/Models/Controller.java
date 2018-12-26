@@ -40,12 +40,5 @@ public class Controller implements Callback<User> {
         Log.i("InternetConn", "Fail " + t.toString());
     }
 
-    public void request(String login)
-    {
-        Gson gson = new Gson();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        UserAPI userAPI = retrofit.create(UserAPI.class);
-        Call<User> call = userAPI.getUser(login);
-        call.enqueue(this);
-    }
+
 }
