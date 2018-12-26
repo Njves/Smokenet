@@ -13,19 +13,15 @@ public abstract class FragmentLauncher extends AppCompatActivity {
     public abstract Fragment createFragment();
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
-    Fragment currentFragment;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         fragmentManager = getSupportFragmentManager();
-        currentFragment = fragmentManager.findFragmentById(R.id.login_frame);
-        if(currentFragment==null)
-        {
-            currentFragment = createFragment();
-            fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.login_frame, currentFragment).commit();
+        Fragment currentFragment = createFragment();
+        fragmentManager.beginTransaction().add(R.id.login_frame, currentFragment).commit();
 
-        }
+
     }
 }
