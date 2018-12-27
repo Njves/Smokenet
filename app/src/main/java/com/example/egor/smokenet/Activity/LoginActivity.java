@@ -17,5 +17,6 @@ public class LoginActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment currentFragment = new RegisterFragment();
         fragmentManager.beginTransaction().add(R.id.login_frame, currentFragment).commit();
+        //Roflan ebalo
     }
 }
