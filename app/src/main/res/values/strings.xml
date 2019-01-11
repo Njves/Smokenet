@@ -6,6 +6,7 @@
     <string name="check_box_rememberme">Remember Me</string>
     <string name="button_register">Register</string>
     <string name="button_login">Login</string>
+    <string name="button_logout">Logout</string>
 
 
 </resources>
