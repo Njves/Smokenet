@@ -33,6 +33,7 @@
         android:layout_marginTop="300dp"
         android:text="@string/check_box_rememberme" />
 
+
     <Button
         android:id="@+id/buttonSubmitRegister"
         style="@style/my_button"

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
@@ -36,7 +37,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
-    public void addUser(String login,String uid, String email, String date)
+    public void addUser(String login,String email, String uid, String date)
     {
         SQLiteDatabase sqlite = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -56,13 +57,21 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+        String[] countResult = cursor.getColumnNames();
+
+        Log.i(TAG, Arrays.toString(countResult) + cursor.getColumnCount() + " count " + cursor.getCount());
         cursor.moveToFirst();
-        if (cursor.getCount() > 0) {
-            user.put("login", cursor.getString(1));
-            user.put("email", cursor.getString(2));
-            user.put("uid", cursor.getString(3));
-            user.put("created_at", cursor.getString(4));
+        while(cursor.moveToNext())
+        {
+            if (cursor.getCount() > 0) {
+                user.put("_id", cursor.getString(0));
+                user.put("login", cursor.getString(1));
+                user.put("email", cursor.getString(2));
+                user.put("uid", cursor.getString(3));
+                user.put("created_at", cursor.getString(4));
+            }
         }
+
         cursor.close();
         db.close();
         return user;

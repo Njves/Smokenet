@@ -7,6 +7,9 @@
     <string name="button_register">Register</string>
     <string name="button_login">Login</string>
     <string name="button_logout">Logout</string>
+    <string name="button_enter">Enter</string>
+    <string name="button_register_now">Nothing account? Register!</string>
+    <string name="edit_text_enter_login_hint">Enter login or email</string>
 
 
 </resources>

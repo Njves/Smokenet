@@ -1,15 +1,8 @@
 package com.example.egor.smokenet.Models;
 
-import com.example.egor.smokenet.Config.AppConfig;
-import com.example.egor.smokenet.Requests.MessengerCreateUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.HashMap;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
