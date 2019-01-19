@@ -100,14 +100,16 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<ServerInformation> call, Response<ServerInformation> response) {
                 mSQLiteDatabase = new SQLiteHandler(getApplicationContext());
                 if(response.body().getError() <= 0) {
+                    session.setLogin(true);
                     String login = response.body().getUser().getLogin();
                     String email = response.body().getUser().getEmail();
                     String uid = response.body().getUid();
                     String createdAt = response.body().getUser().getCreatedAt();
-                    mSQLiteDatabase.addUser(login, uid, email, createdAt);
+                    mSQLiteDatabase.addUser(login, email, uid, createdAt);
                     Log.d(TAG, "login - " + login + " " + response.toString() + "uid " + uid);
                     intent = new Intent(LoginActivity.this, MenuActivity.class);
                     startActivity(intent);
+
                 }
             }
 

@@ -26,10 +26,10 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-            String CREATE_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                    + TABLE_ID + " INTEGER PRIMARY KEY," + USER_LOGIN + " TEXT,"
-                    + USER_EMAIL + " TEXT UNIQUE," + USER_UID + " TEXT,"
-                    + USER_CREATED_AT + " TEXT" + ")";
+        String CREATE_TABLE = "CREATE TABLE " + TABLE_USER + "("
+                + TABLE_ID + " INTEGER PRIMARY KEY," + USER_LOGIN + " TEXT,"
+                + USER_EMAIL + " TEXT UNIQUE," + USER_UID + " TEXT,"
+                + USER_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -61,19 +61,32 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         Log.i(TAG, Arrays.toString(countResult) + cursor.getColumnCount() + " count " + cursor.getCount());
         cursor.moveToFirst();
-        while(cursor.moveToNext())
-        {
-            if (cursor.getCount() > 0) {
-                user.put("_id", cursor.getString(0));
-                user.put("login", cursor.getString(1));
-                user.put("email", cursor.getString(2));
-                user.put("uid", cursor.getString(3));
-                user.put("created_at", cursor.getString(4));
-            }
+        if (cursor.getCount() > 0) {
+            user.put("_id", cursor.getString(0));
+            user.put("login", cursor.getString(1));
+            user.put("email", cursor.getString(2));
+            user.put("uid", cursor.getString(3));
+            user.put("created_at", cursor.getString(4));
+            int login = cursor.getColumnIndex(USER_LOGIN);
+            int email = cursor.getColumnIndex(USER_EMAIL);
+            int uid = cursor.getColumnIndex(USER_UID);
+            int created_at = cursor.getColumnIndex(USER_CREATED_AT);
+            Log.d(TAG,cursor.getString(login) + " " +
+                    cursor.getString(email) + " " +
+                    cursor.getString(uid)  + " " +
+                    cursor.getString(created_at));
+
         }
+
 
         cursor.close();
         db.close();
         return user;
+    }
+    public void deleteUsers()
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_USER, null, null);
+        db.close();
     }
 }

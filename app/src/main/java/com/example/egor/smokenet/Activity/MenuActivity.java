@@ -41,9 +41,11 @@ public class MenuActivity extends AppCompatActivity {
     {
         sqliteHandler = new SQLiteHandler(this);
         HashMap<String,String> userDetails = sqliteHandler.getUserDetails();
-        String data = "Логин - " + userDetails.get("login") + "\nПочта - " + userDetails.get("email") + "\n";
+        String data = "Логин - " + userDetails.get("login") + "\nПочта - " + userDetails.get("email") + "\n" + " Уникальный идентификатор " + userDetails.get("uid");
+
         textViewUserDetails.setTextSize(24);
         textViewUserDetails.setText(data);
+        sqliteHandler.deleteUsers();
     }
 
     @Override
