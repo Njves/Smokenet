@@ -30,13 +30,12 @@ public class MenuActivity extends AppCompatActivity implements DialogFragment.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        buttonLogout = findViewById(R.id.buttonLogout);
-        textViewUserDetails = findViewById(R.id.textViewUserDetails);
+
         sessionManager = new SessionManager(getApplicationContext());
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment dialogFragment = new DialogsFragment();
         fragmentManager.beginTransaction().add(R.id.frame, dialogFragment).commit();
-        buttonLogout.setOnClickListener(new View.OnClickListener() {
+        /*buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sessionManager.setLogin(false);
@@ -44,8 +43,8 @@ public class MenuActivity extends AppCompatActivity implements DialogFragment.On
                 startActivity(intent);
                 sqliteHandler.deleteUsers();
             }
-        });
-        fillUserDetails();
+        });*/
+
 
     }
     public void fillUserDetails()
@@ -61,7 +60,7 @@ public class MenuActivity extends AppCompatActivity implements DialogFragment.On
 
     @Override
     public void onBackPressed() {
-        finish();
+        
     }
 
 

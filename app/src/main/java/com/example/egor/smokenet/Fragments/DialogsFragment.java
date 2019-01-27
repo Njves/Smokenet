@@ -73,7 +73,7 @@ public class DialogsFragment extends Fragment {
         recyclerViewDialogsView = v.findViewById(R.id.list_dialogs);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
-        dialogAdapter = new DialogListAdapter(10);
+        dialogAdapter = new DialogListAdapter(10, getContext());
         recyclerViewDialogsView.setAdapter(dialogAdapter);
         return v;
     }
