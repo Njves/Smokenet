@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 String email = response.body().getUser().getEmail();
                                 String uid = response.body().getUid();
                                 String date = response.body().getUser().getCreatedAt();
-                                db.addUser(login, uid, email, date);
+                                db.addUser(login, email, uid, date);
                                 HashMap<String, String> map = db.getUserDetails();
                                 Log.d(TAG, map.toString());
                                 Toast.makeText(context, "Зарегистрирован", Toast.LENGTH_SHORT).show();
