@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.egor.smokenet.Database.SQLiteHandler;
+import com.example.egor.smokenet.Models.NetworkService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
     private int numberItems;
     private Context context;
     protected List<String> nameList = new ArrayList<>();
+    private NetworkService mNetworkService;
     protected List<String> lastMessageList = new ArrayList<>();
     public DialogListAdapter(int numItems,Context context)
     {
@@ -47,7 +49,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(layoutIdForListItem,viewGroup, false);
         DialogViewHolder dialogViewHolder = new DialogViewHolder(v);
-        dialogViewHolder.textViewUserName.setText(nameList.get(1));
+
         return dialogViewHolder;
 
     }
@@ -103,7 +105,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
                 @Override
                 public void onClick(View v) {
                     int pos = getAdapterPosition();
-
+                    Toast.makeText(context, pos + " " + textViewLastMessage.getText().toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
