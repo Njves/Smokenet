@@ -6,13 +6,22 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
-import com.example.egor.smokenet.DialogListAdapter;
+import com.example.egor.smokenet.Adapters.DialogListAdapter;
+import com.example.egor.smokenet.Models.Client;
+import com.example.egor.smokenet.Models.NetworkService;
 import com.example.egor.smokenet.R;
+import com.example.egor.smokenet.Requests.DialogsUser;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,6 +35,7 @@ public class DialogsFragment extends Fragment {
     RecyclerView recyclerViewDialogsView;
     Context context;
     DialogListAdapter dialogAdapter;
+    public static final String TAG = DialogsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -75,6 +85,19 @@ public class DialogsFragment extends Fragment {
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
         dialogAdapter = new DialogListAdapter(10, getContext());
         recyclerViewDialogsView.setAdapter(dialogAdapter);
+        DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
+        Call<List<Client>> call = dialogsUser.getUsersLogin();
+        call.enqueue(new Callback<List<Client>>() {
+            @Override
+            public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                Log.d(TAG, response.body()+ " ");
+            }
+
+            @Override
+            public void onFailure(Call<List<Client>> call, Throwable t) {
+                Log.d(TAG, t.toString());
+            }
+        });
         return v;
     }
 

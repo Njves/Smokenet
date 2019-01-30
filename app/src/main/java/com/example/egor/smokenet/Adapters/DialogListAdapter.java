@@ -1,7 +1,6 @@
-package com.example.egor.smokenet;
+package com.example.egor.smokenet.Adapters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,11 +12,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.egor.smokenet.Database.SQLiteHandler;
+import com.example.egor.smokenet.Models.Client;
 import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.R;
+import com.example.egor.smokenet.Requests.DialogsUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.DialogViewHolder> {
     public static final String TAG = DialogListAdapter.class.getSimpleName();
@@ -26,19 +33,28 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
     protected List<String> nameList = new ArrayList<>();
     private NetworkService mNetworkService;
     protected List<String> lastMessageList = new ArrayList<>();
-    public DialogListAdapter(int numItems,Context context)
+    List<Client> list;
+
+    public DialogListAdapter(int numItems, Context context)
     {
         this.numberItems = numItems;
         this.context = context;
 
-        nameList.add("Njves");
-        nameList.add("Egor");
-        nameList.add("Prikol");
-        nameList.add("Daun");
+        DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
+        Call<List<Client>> call = dialogsUser.getUsersLogin();
+        call.enqueue(new Callback<List<Client>>() {
+            @Override
+            public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                numberItems = response.body().size();
+                Log.d(TAG, response.body().toString());
+                list = response.body();
+            }
 
-        lastMessageList.add("Привет");
-        lastMessageList.add("Как дела?");
-        lastMessageList.add("Даун?");
+            @Override
+            public void onFailure(Call<List<Client>> call, Throwable t) {
+
+            }
+        });
 
     }
     @NonNull
@@ -55,11 +71,31 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
     }
 
     @Override
-    public void onBindViewHolder(@NonNull DialogViewHolder dialogViewHolder, int i) {
-        String login = randomString(nameList);
-        String message = randomString(lastMessageList);
-        HashMap<String,String> data = getLogin();
-        dialogViewHolder.bind(data.get("login"), message);
+    public void onBindViewHolder(@NonNull final DialogViewHolder dialogViewHolder, int i) {
+
+        DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
+        Call<List<Client>> call = dialogsUser.getUsersLogin();
+        call.enqueue(new Callback<List<Client>>() {
+            @Override
+            public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                numberItems = response.body().size();
+                Log.d(TAG, response.body().toString());
+                list = response.body();
+
+                for (int i = 0; i < numberItems; i++) {
+                    dialogViewHolder.textViewUserName.setText(list.get(i).getLogin());
+                    dialogViewHolder.textViewLastMessage.setText(list.get(i).getEmail());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Client>> call, Throwable t) {
+
+            }
+        });
+
+
     }
     public String randomString(List list)
     {
@@ -109,10 +145,10 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
                 }
             });
         }
-        private void bind(String name, String message)
+        private void bind()
         {
-            textViewUserName.setText(name);
-            textViewLastMessage.setText(message);
+
+
         }
 
     }

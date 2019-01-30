@@ -10,6 +10,7 @@
     <string name="button_enter">Enter</string>
     <string name="button_register_now">Nothing account? Register!</string>
     <string name="edit_text_enter_login_hint">Enter login or email</string>
+    <string name="button_rePassword">Enter password again</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
