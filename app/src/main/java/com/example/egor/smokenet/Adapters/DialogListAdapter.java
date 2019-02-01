@@ -30,31 +30,17 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
     public static final String TAG = DialogListAdapter.class.getSimpleName();
     private int numberItems;
     private Context context;
-    protected List<String> nameList = new ArrayList<>();
+
     private NetworkService mNetworkService;
     protected List<String> lastMessageList = new ArrayList<>();
-    List<Client> list;
+    protected List<Client> list;
 
-    public DialogListAdapter(int numItems, Context context)
+    public DialogListAdapter(int numItems, Context context, List<Client> list)
     {
         this.numberItems = numItems;
         this.context = context;
-
-        DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
-        Call<List<Client>> call = dialogsUser.getUsersLogin();
-        call.enqueue(new Callback<List<Client>>() {
-            @Override
-            public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
-                numberItems = response.body().size();
-                Log.d(TAG, response.body().toString());
-                list = response.body();
-            }
-
-            @Override
-            public void onFailure(Call<List<Client>> call, Throwable t) {
-
-            }
-        });
+        this.list = list;
+        Log.d(TAG, list.toString());
 
     }
     @NonNull
@@ -71,59 +57,23 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final DialogViewHolder dialogViewHolder, int i) {
-
-        DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
-        Call<List<Client>> call = dialogsUser.getUsersLogin();
-        call.enqueue(new Callback<List<Client>>() {
-            @Override
-            public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
-                numberItems = response.body().size();
-                Log.d(TAG, response.body().toString());
-                list = response.body();
-
-                for (int i = 0; i < numberItems; i++) {
-                    dialogViewHolder.textViewUserName.setText(list.get(i).getLogin());
-                    dialogViewHolder.textViewLastMessage.setText(list.get(i).getEmail());
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Client>> call, Throwable t) {
-
-            }
-        });
-
-
+    public void onBindViewHolder(@NonNull DialogViewHolder dialogViewHolder, int i) {
+        Client client = list.get(i);
+        dialogViewHolder.textViewUserName.setText(client.getLogin());
+        dialogViewHolder.textViewLastMessage.setText(client.getEmail());
     }
-    public String randomString(List list)
-    {
-        String login = "";
-        int randInt = (int)(Math.random()*(list.size())+0);
-        try
-        {
-            login = (String)list.get(randInt);
-        }catch(Exception e)
-        {
-            Log.d(TAG,e.toString() + " Произошла ошибка");
-        }
 
-        return login;
-    }
     public HashMap<String, String> getLogin()
     {
         SQLiteHandler sqliteHandler = new SQLiteHandler(context);
         return sqliteHandler.getUserDetails();
-
-
-
     }
 
     @Override
     public int getItemCount() {
-        return numberItems;
+        return list.size();
     }
+
 
     class DialogViewHolder extends RecyclerView.ViewHolder
     {

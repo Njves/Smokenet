@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -56,6 +57,12 @@ public class MenuActivity extends AppCompatActivity implements DialogFragment.On
         textViewUserDetails.setTextSize(24);
         textViewUserDetails.setText(data);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add("Logout");
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
