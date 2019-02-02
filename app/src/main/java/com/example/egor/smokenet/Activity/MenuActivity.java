@@ -66,6 +66,6 @@ public class MenuActivity extends AppCompatActivity implements DialogFragment.On
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        
     }
 }
