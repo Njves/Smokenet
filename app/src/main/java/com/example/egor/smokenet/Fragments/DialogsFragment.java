@@ -17,6 +17,7 @@ import com.example.egor.smokenet.Models.NetworkService;
 import com.example.egor.smokenet.R;
 import com.example.egor.smokenet.Requests.DialogsUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -35,10 +36,11 @@ public class DialogsFragment extends Fragment {
     RecyclerView recyclerViewDialogsView;
     Context context;
     DialogListAdapter dialogAdapter;
+    List<Client> clientList;
     public static final String TAG = DialogsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    List<Client> list;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -81,23 +83,33 @@ public class DialogsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dialogs, container, false);
         recyclerViewDialogsView = v.findViewById(R.id.list_dialogs);
+        clientList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
-        dialogAdapter = new DialogListAdapter(10, getContext());
-        recyclerViewDialogsView.setAdapter(dialogAdapter);
+
+
+
         DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
         Call<List<Client>> call = dialogsUser.getUsersLogin();
+
         call.enqueue(new Callback<List<Client>>() {
             @Override
             public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
-                Log.d(TAG, response.body()+ " ");
+                clientList.addAll(response.body());
+                dialogAdapter = new DialogListAdapter(10, getContext(),clientList);
+                recyclerViewDialogsView.setAdapter(dialogAdapter);
+
+                recyclerViewDialogsView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(Call<List<Client>> call, Throwable t) {
-                Log.d(TAG, t.toString());
+
             }
         });
+
+
+
         return v;
     }
 
