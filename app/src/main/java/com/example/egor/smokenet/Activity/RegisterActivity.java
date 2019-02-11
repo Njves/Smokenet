@@ -30,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText mEditTextRegisterEmail;
     private EditText mEditTextRegisterLogin;
     private EditText mEditTextRegisterPassword;
+    private EditText mEditTextRegisterRePassword;
     private Context context;
     private SQLiteHandler db;
     private SessionManager session;
@@ -40,64 +41,100 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         context = getApplicationContext();
-
         session = new SessionManager(context);
         mEditTextRegisterLogin = findViewById(R.id.editTextLogin);
         mEditTextRegisterEmail = findViewById(R.id.editTextEmail);
         mEditTextRegisterPassword = findViewById(R.id.editTextPassword);
         mButtonRegisterSubmit = findViewById(R.id.buttonSubmitRegister);
+        mEditTextRegisterRePassword = findViewById(R.id.ediTextRePassword);
+        if(savedInstanceState!=null) {
+            mEditTextRegisterEmail.setText(savedInstanceState.getString("email"));
+            mEditTextRegisterLogin.setText(savedInstanceState.getString("login"));
+
+        }
+
+
 
         db = new SQLiteHandler(getApplicationContext());
         mButtonRegisterSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mEditTextRegisterLogin.getText().toString().isEmpty() && !mEditTextRegisterEmail.getText().toString().isEmpty() && !mEditTextRegisterPassword.getText().toString().isEmpty()) {
-                    RegisterUser mcu = NetworkService.getInstance().getRetrofit().create(RegisterUser.class);
-                    HashMap<String, String> requestMap = new HashMap<>();
-                    requestMap.put("login", mEditTextRegisterLogin.getText().toString().trim());
-                    requestMap.put("password", mEditTextRegisterPassword.getText().toString().trim());
-                    requestMap.put("email", mEditTextRegisterEmail.getText().toString().trim());
-
-                    Call<ServerInformation> createUserOnServer = mcu.createUser(requestMap);
-                    createUserOnServer.enqueue(new Callback<ServerInformation>() {
-                        @Override
-                        public void onResponse(Call<ServerInformation> call, Response<ServerInformation> response) {
-                            int error = response.body().getError();
-
-                            if (error <= 0) {
-                                String login = response.body().getUser().getLogin();
-                                String email = response.body().getUser().getEmail();
-                                String uid = response.body().getUid();
-                                String date = response.body().getUser().getCreatedAt();
-                                db.addUser(login, email, uid, date);
-                                HashMap<String, String> map = db.getUserDetails();
-                                Log.d(TAG, map.toString());
-                                Toast.makeText(context, "Зарегистрирован", Toast.LENGTH_SHORT).show();
-                                session.setLogin(true);
-                                intent = new Intent(RegisterActivity.this, MenuActivity.class);
-                                startActivity(intent);
-                            } else {
-                                String error_msg = response.body().getErrorMsg();
-                                Log.d(TAG, error_msg);
-                                Log.d(TAG, ErrorTranslator.translator(error_msg));
-                            }
-
-                        }
-
-
-                        @Override
-                        public void onFailure(Call<ServerInformation> call, Throwable t) {
-                            Log.d(TAG, t.toString());
-                        }
-                    });
-
+                if(mEditTextRegisterRePassword.getText().toString().equals(mEditTextRegisterPassword.getText().toString()))
+                {
+                    registerUser();
                 }
                 else
                 {
-                    Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
     }
+
+   @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, "Override bundle on Register");
+        outState.putString("login", mEditTextRegisterLogin.getText().toString());
+        outState.putString("email", mEditTextRegisterEmail.getText().toString());
+    }
+
+    public void registerUser() {
+        if (!mEditTextRegisterLogin.getText().toString().isEmpty() && !mEditTextRegisterEmail.getText().toString().isEmpty() && !mEditTextRegisterPassword.getText().toString().isEmpty()) {
+
+
+            if (mEditTextRegisterPassword.getText().toString().equals(mEditTextRegisterRePassword.getText().toString())) {
+                RegisterUser mcu = NetworkService.getInstance().getRetrofit().create(RegisterUser.class);
+                HashMap<String, String> requestMap = new HashMap<>();
+                requestMap.put("login", mEditTextRegisterLogin.getText().toString().trim());
+                requestMap.put("password", mEditTextRegisterPassword.getText().toString().trim());
+                requestMap.put("email", mEditTextRegisterEmail.getText().toString().trim());
+
+                Call<ServerInformation> createUserOnServer = mcu.createUser(requestMap);
+                createUserOnServer.enqueue(new Callback<ServerInformation>() {
+                    @Override
+                    public void onResponse(Call<ServerInformation> call, Response<ServerInformation> response) {
+                        int error = response.body().getError();
+
+                        if (error <= 0) {
+                            String login = response.body().getUser().getLogin();
+                            String email = response.body().getUser().getEmail();
+                            String uid = response.body().getUid();
+                            String date = response.body().getUser().getCreatedAt();
+                            db.addUser(login, email, uid, date);
+                            HashMap<String, String> map = db.getUserDetails();
+                            Log.d(TAG, map.toString());
+                            Toast.makeText(context, "Зарегистрирован", Toast.LENGTH_SHORT).show();
+                            session.setLogin(true);
+                            intent = new Intent(RegisterActivity.this, MenuActivity.class);
+                            startActivity(intent);
+                        } else {
+                            String error_msg = response.body().getErrorMsg();
+                            Log.d(TAG, error_msg);
+                            Log.d(TAG, ErrorTranslator.translator(error_msg));
+                            Toast.makeText(context, ErrorTranslator.translator(error_msg), Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+
+
+                    @Override
+                    public void onFailure(Call<ServerInformation> call, Throwable t) {
+                        Log.d(TAG, t.toString());
+                    }
+                });
+            }
+            else
+            {
+                Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show();
+            }
+            } else {
+                Toast.makeText(context, "Заполните все данные", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+
 }

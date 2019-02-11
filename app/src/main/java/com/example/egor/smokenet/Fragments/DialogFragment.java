@@ -1,34 +1,42 @@
 package com.example.egor.smokenet.Fragments;
 
-import android.content.Context;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.egor.smokenet.Adapters.DialogListAdapter;
+import com.example.egor.smokenet.Adapters.MessageListAdapter;
 import com.example.egor.smokenet.R;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link DialogFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DialogFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *
  */
-public class DialogFragment extends Fragment {
+public class DialogFragment extends Fragment  {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
+    public static final String TAG = DialogFragment.class.getSimpleName();
+    private static final String CLIENT_LOGIN = "param1";
+    private static final String CLIENT_EMAIL = "param2";
+    private RecyclerView mRecyclerViewDialog;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+
 
     public DialogFragment() {
         // Required empty public constructor
@@ -39,8 +47,8 @@ public class DialogFragment extends Fragment {
     public static DialogFragment newInstance(String param1, String param2) {
         DialogFragment fragment = new DialogFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(CLIENT_LOGIN, param1);
+        args.putString(CLIENT_EMAIL, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,8 +57,8 @@ public class DialogFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mParam1 = getArguments().getString(CLIENT_LOGIN);
+            mParam2 = getArguments().getString(CLIENT_EMAIL);
         }
     }
 
@@ -58,32 +66,23 @@ public class DialogFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dialog, container, false);
+        mRecyclerViewDialog = v.findViewById(R.id.dialogMessage);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerViewDialog.setLayoutManager(linearLayoutManager);
+        MessageListAdapter messageListAdapter = new MessageListAdapter(getContext());
+        mRecyclerViewDialog.setAdapter(messageListAdapter);
+
+
         return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+
+
+
+
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -95,8 +94,37 @@ public class DialogFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+
+}
+class SocketThreadClient extends Thread
+{
+    @Override
+    public void run() {
+        try {
+            InetAddress inetAddress = InetAddress.getByName("192.168.1.12");
+            Socket socket = new Socket(inetAddress, 8189);
+            InputStream socketInputStream = socket.getInputStream();
+            OutputStream socketOutputStream = socket.getOutputStream();
+
+            DataInputStream socketDataInputStream = new DataInputStream(socketInputStream);
+            DataOutputStream socketDataOutputStream = new DataOutputStream(socketOutputStream);
+            String str = "prikol";
+
+            while(!this.isInterrupted())
+            {
+
+                socketDataOutputStream.writeUTF(str); // отсылаем введенную строку текста серверу.
+                socketDataOutputStream.flush(); // заставляем поток закончить передачу данных.
+                str = socketDataInputStream.readUTF(); // ждем пока сервер отошлет строку текста.
+                Log.d("DialogFragment", str);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+
+
+
 }

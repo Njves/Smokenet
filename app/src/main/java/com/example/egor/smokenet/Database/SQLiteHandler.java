@@ -28,7 +28,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE = "CREATE TABLE " + TABLE_USER + "("
                 + TABLE_ID + " INTEGER PRIMARY KEY," + USER_LOGIN + " TEXT,"
-                + USER_EMAIL + " TEXT UNIQUE," + USER_UID + " TEXT,"
+                + USER_EMAIL + " TEXT ," + USER_UID + " TEXT,"
                 + USER_CREATED_AT + " TEXT" + ")";
         db.execSQL(CREATE_TABLE);
     }

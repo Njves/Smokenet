@@ -12,26 +12,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.egor.smokenet.Database.SQLiteHandler;
-import com.example.egor.smokenet.Models.Client;
-import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.R;
-import com.example.egor.smokenet.Requests.DialogsUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.DialogViewHolder> {
     public static final String TAG = DialogListAdapter.class.getSimpleName();
     private int numberItems;
     private Context context;
 
-    private NetworkService mNetworkService;
+
     protected List<String> lastMessageList = new ArrayList<>();
     protected List<Client> list;
 
@@ -77,7 +70,9 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
 
     class DialogViewHolder extends RecyclerView.ViewHolder
     {
+
         public final String TAG = DialogViewHolder.class.getSimpleName();
+        DialogHolderListener listener;
         ImageView imageViewUserAvatar;
         TextView textViewUserName;
         TextView textViewLastMessage;
@@ -91,7 +86,13 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
                 @Override
                 public void onClick(View v) {
                     int pos = getAdapterPosition();
+
                     Toast.makeText(context, pos + " " + textViewLastMessage.getText().toString(), Toast.LENGTH_SHORT).show();
+                    Client client = list.get(pos);
+                    listener = (DialogHolderListener) context;
+
+                    listener.getClient(client);
+
                 }
             });
         }
@@ -101,6 +102,10 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
 
         }
 
-    }
 
+    }
+    public interface DialogHolderListener
+    {
+        public void getClient(Client client);
+    }
 }

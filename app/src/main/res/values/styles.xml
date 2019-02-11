@@ -12,6 +12,9 @@
 
         
     </style>
+    <style name="sendButton" parent="Base.TextAppearance.AppCompat.Button">
+
+    </style>
 
 </resources>
 

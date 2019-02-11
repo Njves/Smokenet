@@ -1,7 +1,7 @@
 package com.example.egor.smokenet.Fragments;
 
 import android.content.Context;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,11 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
-import com.example.egor.smokenet.Models.Client;
+import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.Models.NetworkService;
 import com.example.egor.smokenet.R;
 import com.example.egor.smokenet.Requests.DialogsUser;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link DialogsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DialogsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class DialogsFragment extends Fragment {
     RecyclerView recyclerViewDialogsView;
     Context context;
@@ -45,7 +45,7 @@ public class DialogsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnGetClientDialogFragment mListener;
 
     public DialogsFragment() {
         // Required empty public constructor
@@ -88,18 +88,17 @@ public class DialogsFragment extends Fragment {
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
 
 
-
+        dialogAdapter = new DialogListAdapter(10, getContext(),clientList);
+        recyclerViewDialogsView.setAdapter(dialogAdapter);
         DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
-        Call<List<Client>> call = dialogsUser.getUsersLogin();
 
+        Call<List<Client>> call = dialogsUser.getUsersLogin();
         call.enqueue(new Callback<List<Client>>() {
             @Override
             public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
-                clientList.addAll(response.body());
-                dialogAdapter = new DialogListAdapter(10, getContext(),clientList);
-                recyclerViewDialogsView.setAdapter(dialogAdapter);
-
+                clientList.addAll(response.body() != null ? response.body() : null);
                 recyclerViewDialogsView.getAdapter().notifyDataSetChanged();
+
             }
 
             @Override
@@ -114,9 +113,9 @@ public class DialogsFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(Client client) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.setClient(client);
         }
     }
 
@@ -124,12 +123,7 @@ public class DialogsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = context;
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override
@@ -137,6 +131,8 @@ public class DialogsFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -148,8 +144,9 @@ public class DialogsFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnGetClientDialogFragment {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        Client setClient(Client client);
     }
 }
+
