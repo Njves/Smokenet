@@ -5,6 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class SQLiteMessageHandler extends SQLiteOpenHelper {
+    private static final String COLUMN_ID = "_id";
+    private static final String COLUMN_TEXT = "text";
+    private static final String COLUMN_SENDER = "sender";
+    private static final String COLUMN_RECIVER = "reciver";
+    private static final String COLUMN_DATE = "date";
     public SQLiteMessageHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
@@ -12,12 +17,13 @@ public class SQLiteMessageHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query = "create table `messages`(\n" +
-                "`_id` integer primary key autoincrement, \n" +
-                "`text` text,\n" +
-                "`sender` text,\n" +
-                "`reciver` text,\n" +
-                "`date` date\n" +
+                COLUMN_ID + " integer primary key autoincrement, \n" +
+                COLUMN_TEXT+ " text,\n" +
+                COLUMN_SENDER + "text,\n" +
+                COLUMN_RECIVER + "text,\n" +
+                COLUMN_DATE + " date\n" +
                 ");";
+        db.execSQL(query);
     }
 
     @Override

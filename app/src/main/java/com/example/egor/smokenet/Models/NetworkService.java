@@ -3,6 +3,8 @@ package com.example.egor.smokenet.Models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -22,7 +24,12 @@ public class NetworkService {
     }
     public NetworkService()
     {
-        retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create(gson)).baseUrl("http://litemessenger.ru/").build();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder client = new OkHttpClient.Builder()
+                .addInterceptor(interceptor);
+        retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create(gson)).client(client.build()).baseUrl("http://litemessenger.ru/").build();
 
     }
     public Retrofit getRetrofit()

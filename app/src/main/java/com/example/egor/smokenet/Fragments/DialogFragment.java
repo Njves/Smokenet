@@ -9,32 +9,53 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
 import com.example.egor.smokenet.Adapters.MessageListAdapter;
+import com.example.egor.smokenet.Database.SQLiteHandler;
+import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.POJO.Message;
 import com.example.egor.smokenet.R;
+import com.example.egor.smokenet.Requests.WriteMessage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.SSLSocket;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  *
  */
-public class DialogFragment extends Fragment  {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class DialogFragment extends Fragment implements Callback<Message> {
     public static final String TAG = DialogFragment.class.getSimpleName();
+    private List<Message> mListMessage;
+    private TextView textViewReciver;
+    private ImageButton buttonSendMessage;
+    private EditText editTextTextField;
     private static final String CLIENT_LOGIN = "param1";
     private static final String CLIENT_EMAIL = "param2";
     private RecyclerView mRecyclerViewDialog;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+    private String clientLogin;
+    private String clientEmail;
 
 
 
@@ -57,8 +78,8 @@ public class DialogFragment extends Fragment  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(CLIENT_LOGIN);
-            mParam2 = getArguments().getString(CLIENT_EMAIL);
+            clientLogin = getArguments().getString(CLIENT_LOGIN);
+            clientEmail = getArguments().getString(CLIENT_EMAIL);
         }
     }
 
@@ -66,65 +87,89 @@ public class DialogFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dialog, container, false);
+
+        buttonSendMessage = v.findViewById(R.id.buttonSendMessage);
+        editTextTextField = v.findViewById(R.id.editTextMessageInput);
+        SQLiteHandler sqliteHandler = new SQLiteHandler(getContext());
+        HashMap<String, String> userDetails = sqliteHandler.getUserDetails();
+
+        mListMessage = new ArrayList<>();
+
         mRecyclerViewDialog = v.findViewById(R.id.dialogMessage);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViewDialog.setLayoutManager(linearLayoutManager);
-        MessageListAdapter messageListAdapter = new MessageListAdapter(getContext());
+        MessageListAdapter messageListAdapter = new MessageListAdapter(getContext(),mListMessage);
         mRecyclerViewDialog.setAdapter(messageListAdapter);
-
+        buttonSendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage(DialogFragment.this);
+            }
+        });
 
         return v;
     }
 
+    public void sendMessage(Callback<Message> callback)
+    {
+        SQLiteHandler sqliteHandler = new SQLiteHandler(getContext());
+        HashMap<String, String> userDetails = sqliteHandler.getUserDetails();
+        String userSender = userDetails.get("login");
+        Log.d(TAG , userSender);
+        WriteMessage writeMessage = NetworkService.getInstance().getRetrofit().create(WriteMessage.class);
+        HashMap<String, String> postMap = new HashMap<>();
+        postMap.put("user_reciver", clientLogin);
+        postMap.put("user_sender",userSender);
+        postMap.put("text", editTextTextField.getText().toString());
+        Call<Message> call = writeMessage.writeMessage(postMap);
+        call.enqueue(callback);
+
+    }
 
 
-
-
-
-
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-
-}
-class SocketThreadClient extends Thread
-{
     @Override
-    public void run() {
+    public void onResponse(Call<Message> call, Response<Message> response) {
+        Log.d(TAG, response.body().toString());
+    }
+
+    @Override
+    public void onFailure(Call<Message> call, Throwable t) {
+        Log.i(TAG, "Failure - " + t.toString());
+    }
+}
+class AsyncClient extends AsyncTask<Void, Void, Void>
+{
+    private String clientIp;
+    private int port;
+    public AsyncClient(String ip, int port) {
+        clientIp = ip;
+        this.port = port;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+    }
+
+    @Override
+    protected Void doInBackground(Void... voids) {
         try {
-            InetAddress inetAddress = InetAddress.getByName("192.168.1.12");
-            Socket socket = new Socket(inetAddress, 8189);
+            Socket socket = new Socket(clientIp,port);
             InputStream socketInputStream = socket.getInputStream();
             OutputStream socketOutputStream = socket.getOutputStream();
 
-            DataInputStream socketDataInputStream = new DataInputStream(socketInputStream);
-            DataOutputStream socketDataOutputStream = new DataOutputStream(socketOutputStream);
-            String str = "prikol";
-
-            while(!this.isInterrupted())
-            {
-
-                socketDataOutputStream.writeUTF(str); // отсылаем введенную строку текста серверу.
-                socketDataOutputStream.flush(); // заставляем поток закончить передачу данных.
-                str = socketDataInputStream.readUTF(); // ждем пока сервер отошлет строку текста.
-                Log.d("DialogFragment", str);
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return null;
     }
-
-
-
-
 }
+
+

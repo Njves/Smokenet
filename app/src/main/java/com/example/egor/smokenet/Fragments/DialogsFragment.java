@@ -40,7 +40,6 @@ public class DialogsFragment extends Fragment {
     public static final String TAG = DialogsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    List<Client> list;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;

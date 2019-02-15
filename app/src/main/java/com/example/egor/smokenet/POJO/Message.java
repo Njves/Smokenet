@@ -72,4 +72,15 @@ public class Message {
         this.time = time;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "uniqueId='" + uniqueId + '\'' +
+                ", userSender='" + userSender + '\'' +
+                ", userReciver='" + userReciver + '\'' +
+                ", text='" + text + '\'' +
+                ", flags=" + flags +
+                ", time=" + time +
+                '}';
+    }
 }

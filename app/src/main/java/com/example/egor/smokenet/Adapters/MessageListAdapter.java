@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.egor.smokenet.POJO.Message;
 import com.example.egor.smokenet.R;
 
 import java.util.ArrayList;
@@ -17,17 +18,23 @@ import java.util.List;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>
 {
     public static final String TAG = MessageListAdapter.class.getSimpleName();
-    List<String> messageList;
+    List<Message> messageList;
     private Context context;
+    ArrayList<String> list = new ArrayList<>();
 
-    public MessageListAdapter(Context context) {
+
+    public MessageListAdapter(Context context, List<Message> messageList) {
         this.context = context;
-
-        messageList = new ArrayList<>();
-        messageList.add("Привет!");
-        messageList.add("Привет) как дела?");
-        messageList.add("Да ничего, в школе сижу, а ты где?");
-        messageList.add("Я сегодня в больницу поехал, поэтому дома остался");
+        this.messageList = messageList;
+        list.add("Привет");
+        list.add("Привет!");
+        list.add("Как дела?");
+        list.add("Отлично, а у тебя?");
+        list.add("Классно, скоро пойду на автобус в магазин");
+        list.add("Понятно, а что брать собираешься?");
+        list.add("Одежду, там сейчас скидки");
+        list.add("Скидки? Может и мне тогда съездить, ты не против?");
+        list.add("Не против, супер)");
     }
 
     @NonNull
@@ -45,22 +52,22 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
 
 
-
-        if(i%2==0)
-        {
-            messageViewHolder.textViewUserSender.setText("Егор");
-            messageViewHolder.textViewUserSender.setText(messageList.get(i));
-        }
-        else
-        {
-            messageViewHolder.textViewUserReciver.setText("Никита");
-            messageViewHolder.textViewUserReciver.setText(messageList.get(i));
+        for (int j = 0; j < i; j++) {
+            if(i%2==0) {
+                messageViewHolder.textViewUserSender.setText("Njves");
+                messageViewHolder.textViewTextMessageSender.setText(list.get(i));
+            }
+            else
+            {
+                messageViewHolder.textViewUserReciver.setText("Egor");
+                messageViewHolder.textViewTextMessageReciver.setText(list.get(i));
+            }
         }
     }
 
     @Override
     public int getItemCount() {
-        return messageList.size();
+        return list.size();
     }
 
     class MessageViewHolder extends RecyclerView.ViewHolder

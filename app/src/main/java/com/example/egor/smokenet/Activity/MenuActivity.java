@@ -125,7 +125,7 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().detach(dialogFragment).commit();
         dialogFragment = DialogFragment.newInstance(client.getLogin(), client.getEmail());
-        fragmentManager.beginTransaction().add(R.id.frame,dialogFragment).commit();
+        fragmentManager.beginTransaction().add(R.id.frame,dialogFragment).addToBackStack(null).commit();
     }
 
 }
