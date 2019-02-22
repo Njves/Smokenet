@@ -1,5 +1,7 @@
 package com.example.egor.smokenet.Fragments;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,7 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.example.egor.smokenet.Activity.MenuActivity;
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
 import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.Models.NetworkService;
@@ -25,6 +30,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -37,6 +43,7 @@ public class DialogsFragment extends Fragment {
     Context context;
     DialogListAdapter dialogAdapter;
     List<Client> clientList;
+    ProgressDialog progressDialog;
     public static final String TAG = DialogsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -82,11 +89,10 @@ public class DialogsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dialogs, container, false);
         recyclerViewDialogsView = v.findViewById(R.id.list_dialogs);
+        showProgressDialog();
         clientList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
-
-
         dialogAdapter = new DialogListAdapter(10, getContext(),clientList);
         recyclerViewDialogsView.setAdapter(dialogAdapter);
         DialogsUser dialogsUser = NetworkService.getInstance().getRetrofit().create(DialogsUser.class);
@@ -95,7 +101,9 @@ public class DialogsFragment extends Fragment {
         call.enqueue(new Callback<List<Client>>() {
             @Override
             public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
+                hideProgressDialog();
                 clientList.addAll(response.body() != null ? response.body() : null);
+
                 recyclerViewDialogsView.getAdapter().notifyDataSetChanged();
 
             }
@@ -132,6 +140,23 @@ public class DialogsFragment extends Fragment {
     }
 
 
+    public void showProgressDialog()
+    {
+        progressDialog = new ProgressDialog(getActivity(),R.style.MyTheme);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
+        progressDialog.show();
+
+
+    }
+    public void hideProgressDialog()
+    {
+        if(progressDialog!=null)
+        {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+    }
 
     /**
      * This interface must be implemented by activities that contain this
