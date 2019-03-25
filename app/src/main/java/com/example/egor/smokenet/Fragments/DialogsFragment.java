@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.example.egor.smokenet.Activity.MenuActivity;
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
+import com.example.egor.smokenet.Models.ProgressDialogShower;
 import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.Models.NetworkService;
 import com.example.egor.smokenet.R;
@@ -43,7 +44,7 @@ public class DialogsFragment extends Fragment {
     Context context;
     DialogListAdapter dialogAdapter;
     List<Client> clientList;
-    ProgressDialog progressDialog;
+    ProgressDialogShower showProgressDialog;
     public static final String TAG = DialogsFragment.class.getSimpleName();
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -54,7 +55,7 @@ public class DialogsFragment extends Fragment {
     private OnGetClientDialogFragment mListener;
 
     public DialogsFragment() {
-        // Required empty public constructor
+
     }
 
     /**
@@ -88,8 +89,10 @@ public class DialogsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dialogs, container, false);
+
+        showProgressDialog = new ProgressDialogShower(context);
         recyclerViewDialogsView = v.findViewById(R.id.list_dialogs);
-        showProgressDialog();
+        showProgressDialog.showProgressDialog();
         clientList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDialogsView.setLayoutManager(linearLayoutManager);
@@ -101,7 +104,7 @@ public class DialogsFragment extends Fragment {
         call.enqueue(new Callback<List<Client>>() {
             @Override
             public void onResponse(Call<List<Client>> call, Response<List<Client>> response) {
-                hideProgressDialog();
+                showProgressDialog.hideProgressDialog();
                 clientList.addAll(response.body() != null ? response.body() : null);
 
                 recyclerViewDialogsView.getAdapter().notifyDataSetChanged();
@@ -120,11 +123,7 @@ public class DialogsFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Client client) {
-        if (mListener != null) {
-            mListener.setClient(client);
-        }
-    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -140,34 +139,8 @@ public class DialogsFragment extends Fragment {
     }
 
 
-    public void showProgressDialog()
-    {
-        progressDialog = new ProgressDialog(getActivity(),R.style.MyTheme);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Small);
-        progressDialog.show();
 
 
-    }
-    public void hideProgressDialog()
-    {
-        if(progressDialog!=null)
-        {
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnGetClientDialogFragment {
         // TODO: Update argument type and name
         Client setClient(Client client);

@@ -90,22 +90,17 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListAdapter.Di
                     Toast.makeText(context, pos + " " + textViewLastMessage.getText().toString(), Toast.LENGTH_SHORT).show();
                     Client client = list.get(pos);
                     listener = (DialogHolderListener) context;
-
                     listener.getClient(client);
 
                 }
             });
         }
-        private void bind()
-        {
 
-
-        }
 
 
     }
     public interface DialogHolderListener
     {
-        public void getClient(Client client);
+        void getClient(Client client);
     }
 }

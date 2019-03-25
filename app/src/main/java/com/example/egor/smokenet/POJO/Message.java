@@ -1,7 +1,12 @@
 package com.example.egor.smokenet.POJO;
 
+import android.util.Log;
+import com.example.egor.smokenet.Models.NetworkService;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Message {
 
@@ -82,5 +87,27 @@ public class Message {
                 ", flags=" + flags +
                 ", time=" + time +
                 '}';
+    }
+    public static HashMap<String, String> messageConverter(Message message)
+    {
+        String JSON = NetworkService.getInstance().getGson().toJson(message);
+        HashMap<String, String> map = NetworkService.getInstance().getGson().fromJson(JSON, HashMap.class);
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            Log.d("MessageConverter", "Ключ: " + key + " ," + " Значения: " + value);
+        }
+            
+
+        return map;
+    }
+
+    public Message(String userSender, String userReciver, String text, Integer flags, Integer time) {
+        this.userSender = userSender;
+        this.userReciver = userReciver;
+        this.text = text;
+        this.flags = flags;
+        this.time = time;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.egor.smokenet.Requests;
 
+import com.example.egor.smokenet.Config.AppConfig;
 import com.example.egor.smokenet.POJO.ServerInformation;
 import com.example.egor.smokenet.POJO.User;
 
@@ -12,6 +13,6 @@ import retrofit2.http.POST;
 
 public interface LoginUser {
     @FormUrlEncoded
-    @POST("users/login.php")
+    @POST(AppConfig.USERS_API +"login.php")
     Call<ServerInformation> loginPostCall(@FieldMap HashMap<String, String> postMap);
 }

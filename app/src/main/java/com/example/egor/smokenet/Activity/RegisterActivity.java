@@ -14,6 +14,7 @@ import com.example.egor.smokenet.Database.SQLiteHandler;
 
 import com.example.egor.smokenet.Models.ErrorTranslator;
 import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.Models.ProgressDialogShower;
 import com.example.egor.smokenet.Models.SessionManager;
 import com.example.egor.smokenet.POJO.ServerInformation;
 import com.example.egor.smokenet.R;
@@ -34,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Context context;
     private SQLiteHandler db;
     private SessionManager session;
+    private ProgressDialogShower mProgressDialogShower;
     public static final String TAG = RegisterActivity.class.getSimpleName();
     private Intent intent;
     @Override
@@ -42,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         context = getApplicationContext();
         session = new SessionManager(context);
+        mProgressDialogShower = new ProgressDialogShower(this);
         mEditTextRegisterLogin = findViewById(R.id.editTextLogin);
         mEditTextRegisterEmail = findViewById(R.id.editTextEmail);
         mEditTextRegisterPassword = findViewById(R.id.editTextPassword);
@@ -59,13 +62,21 @@ public class RegisterActivity extends AppCompatActivity {
         mButtonRegisterSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mEditTextRegisterRePassword.getText().toString().equals(mEditTextRegisterPassword.getText().toString()))
-                {
-                    registerUser();
+                mProgressDialogShower.showProgressDialog();
+                if(mEditTextRegisterPassword.getText().toString().length()>=6 && mEditTextRegisterRePassword.getText().toString().length()>=6) {
+                    if (mEditTextRegisterRePassword.getText().toString().equals(mEditTextRegisterPassword.getText().toString())) {
+                        registerUser();
+                    }
+                    else
+                    {
+                        mProgressDialogShower.hideProgressDialog();
+                        Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else
                 {
-                    Toast.makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT).show();
+                    mProgressDialogShower.hideProgressDialog();
+                    Toast.makeText(context, "Пароль содержит меньше 6 символов", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -76,14 +87,14 @@ public class RegisterActivity extends AppCompatActivity {
    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i(TAG, "Override bundle on Register");
+        Log.i(TAG, "Override bundle in Register");
         outState.putString("login", mEditTextRegisterLogin.getText().toString());
         outState.putString("email", mEditTextRegisterEmail.getText().toString());
     }
 
     public void registerUser() {
-        if (!mEditTextRegisterLogin.getText().toString().isEmpty() && !mEditTextRegisterEmail.getText().toString().isEmpty() && !mEditTextRegisterPassword.getText().toString().isEmpty()) {
 
+        if (!mEditTextRegisterLogin.getText().toString().isEmpty() && !mEditTextRegisterEmail.getText().toString().isEmpty() && !mEditTextRegisterPassword.getText().toString().isEmpty()) {
 
             if (mEditTextRegisterPassword.getText().toString().equals(mEditTextRegisterRePassword.getText().toString())) {
                 RegisterUser mcu = NetworkService.getInstance().getRetrofit().create(RegisterUser.class);
@@ -96,6 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
                 createUserOnServer.enqueue(new Callback<ServerInformation>() {
                     @Override
                     public void onResponse(Call<ServerInformation> call, Response<ServerInformation> response) {
+                        mProgressDialogShower.hideProgressDialog();
                         int error = response.body().getError();
 
                         if (error <= 0) {

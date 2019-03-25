@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lite Messenger</string>
+    <string name="app_name">Smoke.net</string>
     <string name="edit_text_login_hint">Enter login…</string>
     <string name="edit_text_password_hint">Enter password…</string>
     <string name="edit_text_email_hint">Enter email…</string>

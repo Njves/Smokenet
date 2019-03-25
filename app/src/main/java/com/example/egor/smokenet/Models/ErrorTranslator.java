@@ -1,6 +1,7 @@
 package com.example.egor.smokenet.Models;
 
 public class ErrorTranslator {
+    //Транслирует ошибки с сервера в текстовые переменные
     private String errorUserAlreadyExisists;
     private String errorPasswordLess;
     private String errorUserLoginAlreadyExists;

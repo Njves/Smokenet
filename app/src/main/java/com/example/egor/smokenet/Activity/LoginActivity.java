@@ -14,6 +14,7 @@ import com.example.egor.smokenet.Config.AppConfig;
 import com.example.egor.smokenet.Database.SQLiteHandler;
 import com.example.egor.smokenet.Models.ErrorTranslator;
 import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.Models.ProgressDialogShower;
 import com.example.egor.smokenet.Models.SessionManager;
 import com.example.egor.smokenet.POJO.ServerInformation;
 import com.example.egor.smokenet.POJO.User;
@@ -37,12 +38,15 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mEditTextPassword;
     private Button mButtonGoToRegister;
     private Button mButtonLoginSubmit;
+    private ProgressDialogShower mProgressDialogShower;
     public static final String TAG = LoginActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         session = new SessionManager(getApplicationContext());
+        mProgressDialogShower = new ProgressDialogShower(this);
         mEditTextLoginOrEmail = findViewById(R.id.editTextLoginInput);
         mEditTextPassword = findViewById(R.id.editTextPasswordInput);
         mButtonGoToRegister = findViewById(R.id.buttonRegisterNow);
@@ -55,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!mEditTextLoginOrEmail.getText().toString().isEmpty() && !mEditTextPassword.getText().toString().isEmpty()) {
+                    mProgressDialogShower.showProgressDialog();
                     userLogin();
                 }
             }
@@ -111,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ServerInformation> call, Response<ServerInformation> response) {
                     mSQLiteDatabase = new SQLiteHandler(getApplicationContext());
+                    mProgressDialogShower.hideProgressDialog();
                     if (response.body().getError() <= 0) {
                         session.setLogin(true);
                         String login = response.body().getUser().getLogin();

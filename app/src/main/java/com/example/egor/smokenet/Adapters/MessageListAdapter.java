@@ -19,22 +19,16 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 {
     public static final String TAG = MessageListAdapter.class.getSimpleName();
     List<Message> messageList;
+    List<Message> messageListReverse;
     private Context context;
-    ArrayList<String> list = new ArrayList<>();
+    ArrayList<Message> list = new ArrayList<>();
 
 
-    public MessageListAdapter(Context context, List<Message> messageList) {
+    public MessageListAdapter(Context context, List<Message> messageList, List<Message> reverse) {
         this.context = context;
         this.messageList = messageList;
-        list.add("Привет");
-        list.add("Привет!");
-        list.add("Как дела?");
-        list.add("Отлично, а у тебя?");
-        list.add("Классно, скоро пойду на автобус в магазин");
-        list.add("Понятно, а что брать собираешься?");
-        list.add("Одежду, там сейчас скидки");
-        list.add("Скидки? Может и мне тогда съездить, ты не против?");
-        list.add("Не против, супер)");
+        this.messageListReverse = reverse;
+
     }
 
     @NonNull
@@ -51,23 +45,16 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
 
+        //Вставить данные в переменные
+        messageViewHolder.putMessage(i);
+        messageViewHolder.putMessageReciver(i);
 
-        for (int j = 0; j < i; j++) {
-            if(i%2==0) {
-                messageViewHolder.textViewUserSender.setText("Njves");
-                messageViewHolder.textViewTextMessageSender.setText(list.get(i));
-            }
-            else
-            {
-                messageViewHolder.textViewUserReciver.setText("Egor");
-                messageViewHolder.textViewTextMessageReciver.setText(list.get(i));
-            }
-        }
+
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return messageList.size();
     }
 
     class MessageViewHolder extends RecyclerView.ViewHolder
@@ -86,6 +73,20 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             textViewUserReciver = itemView.findViewById(R.id.login_reciver);
 
         }
+        public void putMessage(int i)
+        {
+            Message msg = messageList.get(i);
+            textViewUserSender.setText(msg.getUserSender());
+            textViewTextMessageSender.setText(msg.getText());
+        }
+        public void putMessageReciver(int i)
+        {
+            Message msg = messageListReverse.get(i);
+            textViewTextMessageReciver.setText(msg.getUserSender());
+            textViewTextMessageReciver.setText(msg.getText());
+        }
+
     }
+
 }
 

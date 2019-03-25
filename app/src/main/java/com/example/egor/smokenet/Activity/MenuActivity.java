@@ -2,6 +2,7 @@ package com.example.egor.smokenet.Activity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
+import com.example.egor.smokenet.Annotatoins.NetworkThread;
+import com.example.egor.smokenet.Config.AppConfig;
 import com.example.egor.smokenet.Database.SQLiteHandler;
 import com.example.egor.smokenet.Fragments.DialogFragment;
 import com.example.egor.smokenet.Fragments.DialogsFragment;
@@ -21,27 +24,38 @@ import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.Models.SessionManager;
 import com.example.egor.smokenet.R;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class MenuActivity extends AppCompatActivity implements DialogListAdapter.DialogHolderListener {
-    Button buttonLogout;
+
     TextView textViewUserDetails;
     SQLiteHandler sqliteHandler;
     SessionManager sessionManager;
     Intent intent;
     Fragment dialogFragment;
-    FragmentManager fragmentManager;
+    Fragment dialogsFragment;
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    Dialog dialogAboutDev;
     public final static String TAG = MenuActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
         sessionManager = new SessionManager(getApplicationContext());
-        if(dialogFragment==null) {
-            fragmentManager = getSupportFragmentManager();
-            dialogFragment = new DialogsFragment();
-            fragmentManager.beginTransaction().add(R.id.frame, dialogFragment).commit();
+        if (dialogFragment == null) {
+
+            dialogsFragment = new DialogsFragment();
+
+            fragmentManager.beginTransaction().replace(R.id.frame, dialogsFragment, "dialog").commit();
+
         }
         /*buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,16 +69,7 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
 
 
     }
-    public void fillUserDetails()
-    {
-        sqliteHandler = new SQLiteHandler(this);
-        HashMap<String,String> userDetails = sqliteHandler.getUserDetails();
-        String data = "Логин - " + userDetails.get("login") + "\nПочта - " + userDetails.get("email") + "\n" + " Уникальный идентификатор " + userDetails.get("uid");
 
-        textViewUserDetails.setTextSize(24);
-        textViewUserDetails.setText(data);
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,25 +80,23 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
-            case R.id.app_logout:
-            {
+        switch (item.getItemId()) {
+            case R.id.app_logout: {
                 menuClickLogout();
                 return true;
             }
-            case R.id.about_dev:
-            {
+            case R.id.about_dev: {
                 menuClickAboutDev();
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
     }
-    public void menuClickLogout()
-    {
+
+    public void menuClickLogout() {
         sqliteHandler = new SQLiteHandler(this);
         sqliteHandler.deleteUsers();
         sessionManager.setLogin(false);
@@ -102,9 +105,9 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
 
 
     }
-    public void menuClickAboutDev()
-    {
-        Dialog dialogAboutDev = new Dialog(MenuActivity.this);
+
+    public void menuClickAboutDev() {
+        dialogAboutDev = new Dialog(MenuActivity.this);
         dialogAboutDev.setTitle("О разработчках");
         dialogAboutDev.setContentView(R.layout.dialog_layout_about_dev);
         TextView text = dialogAboutDev.findViewById(R.id.about_dev_text);
@@ -113,20 +116,34 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
 
     }
 
-    @Override
-    public void onBackPressed() {
-        
-    }
-
 
     @Override
     public void getClient(Client client) {
         Log.d(TAG, client.toString());
-        fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().detach(dialogFragment).commit();
+
+
         dialogFragment = DialogFragment.newInstance(client.getLogin(), client.getEmail());
-        fragmentManager.beginTransaction().add(R.id.frame,dialogFragment).addToBackStack(null).commit();
+
+        fragmentManager.beginTransaction().replace(R.id.frame, dialogFragment, "dialog").addToBackStack("dialogs").commitAllowingStateLoss();
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        textViewUserDetails = null;
+        sqliteHandler = null;
+        sessionManager = null;
+        intent = null;
+        dialogFragment = null;
+        fragmentManager = null;
+        dialogAboutDev = null;
+        dialogsFragment = null;
+
+    }
+
+
+
 }
+
 

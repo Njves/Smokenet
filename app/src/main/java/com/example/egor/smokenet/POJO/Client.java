@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Comparator;
 
-public class Client implements Comparator<Client> {
+public class Client {
 
 
     @SerializedName("login")
@@ -14,8 +14,9 @@ public class Client implements Comparator<Client> {
     @SerializedName("email")
     @Expose
     private String email;
-
-    private int priority;
+    @SerializedName("unique_id")
+    @Expose
+    private String uniqueId;
 
     public String getLogin() {
         return login;
@@ -33,32 +34,11 @@ public class Client implements Comparator<Client> {
         this.email = email;
     }
 
-    public int getPriority() {
-        return priority;
+    public String getUniqueId() {
+        return uniqueId;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    @Override
-    public String toString() {
-        return "Client{" +
-                "login='" + login + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
-
-    @Override
-    public int compare(Client o1, Client o2) {
-        if(o1.getPriority()>o2.getPriority())
-        {
-            return 1;
-
-        }
-        else
-        {
-            return 0;
-        }
+    public void setUniqueId(String uniqueId) {
+        this.uniqueId = uniqueId;
     }
 }

@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class SQLiteHandler extends SQLiteOpenHelper {
     public static final String TAG = SQLiteHandler.class.getSimpleName();
-    public static final String NAME = "LiteMessengerDatabase";
+    public static final String DB_NAME = "userDb";
     public static final int VERSION = 1;
     public static final String TABLE_USER = "users";
     public static final String TABLE_ID = "_id";
@@ -21,7 +21,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public static final String USER_UID = "uid";
     public static final String USER_CREATED_AT = "created_at";
     public SQLiteHandler(Context context) {
-        super(context, NAME, null, VERSION);
+        super(context, DB_NAME, null, VERSION);
     }
 
     @Override
