@@ -2,7 +2,6 @@ package com.example.egor.smokenet.Activity;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,26 +10,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
-
 import com.example.egor.smokenet.Adapters.DialogListAdapter;
-import com.example.egor.smokenet.Annotatoins.NetworkThread;
-import com.example.egor.smokenet.Config.AppConfig;
+import com.example.egor.smokenet.BuildConfig;
 import com.example.egor.smokenet.Database.SQLiteHandler;
 import com.example.egor.smokenet.Fragments.DialogFragment;
 import com.example.egor.smokenet.Fragments.DialogsFragment;
-import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.Models.SessionManager;
+import com.example.egor.smokenet.Models.TCPConnection;
+import com.example.egor.smokenet.POJO.Client;
 import com.example.egor.smokenet.R;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.HashMap;
 
 public class MenuActivity extends AppCompatActivity implements DialogListAdapter.DialogHolderListener {
 
@@ -42,6 +33,7 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
     Fragment dialogsFragment;
     FragmentManager fragmentManager = getSupportFragmentManager();
     Dialog dialogAboutDev;
+
     public final static String TAG = MenuActivity.class.getSimpleName();
 
     @Override
@@ -50,6 +42,18 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
         setContentView(R.layout.activity_menu);
 
         sessionManager = new SessionManager(getApplicationContext());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                TCPConnection tcp = null;
+                try {
+                    tcp = new TCPConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                tcp.startTalk();
+            }
+        }).start();
         if (dialogFragment == null) {
 
             dialogsFragment = new DialogsFragment();
@@ -111,7 +115,7 @@ public class MenuActivity extends AppCompatActivity implements DialogListAdapter
         dialogAboutDev.setTitle("О разработчках");
         dialogAboutDev.setContentView(R.layout.dialog_layout_about_dev);
         TextView text = dialogAboutDev.findViewById(R.id.about_dev_text);
-        text.setText("Разработчики: Егор Луговкин," + "\n" + "Последня версия: 1.0.1dev");
+        text.setText("Разработчики: Егор Луговкин," + "\n" + "Последня версия: 1.0.1dev" + BuildConfig.VERSION_NAME);
         dialogAboutDev.show();
 
     }

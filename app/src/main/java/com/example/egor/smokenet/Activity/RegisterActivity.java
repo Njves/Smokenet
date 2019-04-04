@@ -1,6 +1,8 @@
 package com.example.egor.smokenet.Activity;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements Dialog.OnShowListener{
     private Button mButtonRegisterSubmit;
     private EditText mEditTextRegisterEmail;
     private EditText mEditTextRegisterLogin;
@@ -36,6 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
     private SQLiteHandler db;
     private SessionManager session;
     private ProgressDialogShower mProgressDialogShower;
+    // Окно согласия политики конфиденциальности
+    private Dialog agreementDialog;
     public static final String TAG = RegisterActivity.class.getSimpleName();
     private Intent intent;
     @Override
@@ -59,6 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         db = new SQLiteHandler(getApplicationContext());
+
         mButtonRegisterSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,7 +88,15 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
     }
+    public void showAgreementDialog()
+    {
+        agreementDialog = new Dialog(RegisterActivity.this);
+        agreementDialog.setContentView(R.layout.dialog_agreement_privacy_policy);
+        agreementDialog.setOnShowListener(this);
 
+        agreementDialog.show();
+
+    }
    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -111,6 +124,9 @@ public class RegisterActivity extends AppCompatActivity {
                         int error = response.body().getError();
 
                         if (error <= 0) {
+                            //Вызов диалогового окна о соглашение политики безопасности
+
+
                             String login = response.body().getUser().getLogin();
                             String email = response.body().getUser().getEmail();
                             String uid = response.body().getUid();
@@ -148,5 +164,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
 
-
+    @Override
+    public void onShow(DialogInterface dialog) {
+        Log.i(TAG, "Открыт диалог политики конфиденциальности");
+    }
 }

@@ -3,6 +3,7 @@ package com.example.egor.smokenet.Models;
 import android.util.Log;
 
 import com.example.egor.smokenet.Config.AppConfig;
+import okhttp3.WebSocket;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,30 +13,31 @@ import java.net.Socket;
 
 public class TCPConnection {
     Socket socket;
+
     BufferedReader bufferedReader;
     PrintWriter printWriter;
 
-    public TCPConnection()
+
+    public TCPConnection() throws IOException {
+        socket = new Socket("192.168.1.65", AppConfig.SERVER_PORT);
+        bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        printWriter = new PrintWriter(socket.getOutputStream(), true);
+
+
+    }
+    public void startTalk()
     {
+        printWriter.println("Привет всем!");
         try {
-            socket = new Socket(AppConfig.BASE_URL,AppConfig.HTTP_POST);
-            bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-            printWriter = new PrintWriter(socket.getOutputStream(), true);
-            StringBuilder command = new StringBuilder("GET users/register.html HTTP/1.1");
-            command.append("Host: litemessenger.ru");
-            command.append("Connection:close");
-            printWriter.print(command);
-
-            String line = bufferedReader.readLine();
-            Log.d("Socketffb", line);
-            while(line!=null)
+            String str = bufferedReader.readLine();
+            while (str!=null)
             {
-                line = bufferedReader.readLine();
-                Log.d("SOCKETSFFB",line);
+                Log.d("TCPConnecton", str);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 }

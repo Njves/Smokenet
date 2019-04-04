@@ -18,6 +18,7 @@ import com.example.egor.smokenet.Database.SQLiteHandler;
 import com.example.egor.smokenet.Database.SQLiteMessageHandler;
 import com.example.egor.smokenet.Interfaces.MessageListener;
 import com.example.egor.smokenet.Models.NetworkService;
+import com.example.egor.smokenet.Models.TCPConnection;
 import com.example.egor.smokenet.POJO.Message;
 import com.example.egor.smokenet.R;
 import com.example.egor.smokenet.Requests.WriteMessage;
@@ -26,6 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,7 +97,7 @@ public class DialogFragment extends Fragment implements Callback<Message> {
         mRecyclerViewDialog = v.findViewById(R.id.dialogMessage);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViewDialog.setLayoutManager(linearLayoutManager);
-        MessageListAdapter messageListAdapter = new MessageListAdapter(getContext(),mListMessage, mListMessageRevers);
+        MessageListAdapter messageListAdapter = new MessageListAdapter(getContext(),mListMessage);
         mRecyclerViewDialog.setAdapter(messageListAdapter);
         getMessageList();
 
@@ -165,19 +167,7 @@ public class DialogFragment extends Fragment implements Callback<Message> {
                 Log.d(TAG, t.toString());
             }
         });
-        Call<List<Message>> callMessagesReverse = getDialogMessages.messageCall("get_list", clientLogin, sender);
-        callMessages.enqueue(new Callback<List<Message>>() {
-            @Override
-            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                mListMessageRevers.addAll(response.body());
-                mRecyclerViewDialog.getAdapter().notifyDataSetChanged();
-            }
 
-            @Override
-            public void onFailure(Call<List<Message>> call, Throwable t) {
-
-            }
-        });
     }
     @Override
     public void onResponse(Call<Message> call, Response<Message> response) {

@@ -24,10 +24,10 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     ArrayList<Message> list = new ArrayList<>();
 
 
-    public MessageListAdapter(Context context, List<Message> messageList, List<Message> reverse) {
+    public MessageListAdapter(Context context, List<Message> messageList) {
         this.context = context;
         this.messageList = messageList;
-        this.messageListReverse = reverse;
+
 
     }
 
@@ -47,7 +47,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
         //Вставить данные в переменные
         messageViewHolder.putMessage(i);
-        messageViewHolder.putMessageReciver(i);
+
 
 
     }
@@ -79,12 +79,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             textViewUserSender.setText(msg.getUserSender());
             textViewTextMessageSender.setText(msg.getText());
         }
-        public void putMessageReciver(int i)
-        {
-            Message msg = messageListReverse.get(i);
-            textViewTextMessageReciver.setText(msg.getUserSender());
-            textViewTextMessageReciver.setText(msg.getText());
-        }
+
 
     }
 
